@@ -13,6 +13,7 @@ func = joinpath(home,"functions")
 include(joinpath(func,"SingleTrialCSD.jl"))
 include(joinpath(func,"get_csd.jl")) # used in SingleTrialCSD.jl
 include(joinpath(func,"sink_dura.jl"))
+include(joinpath(func,"functions.jl")) # interX
 
 # determine data to read -- this will be a more complicated process later!
 # groups, animal, condition, measurement
@@ -36,13 +37,14 @@ frqz = Dat["Header"]["stimlist"][:,1]
 
 ### Calculate CSD, LFP, Avrec, Relres, Absrec:
 
-Data = SingleTrialCSD(Dat["SWEEP"], channels, BL)
+csdData = SingleTrialCSD(Dat["SWEEP"], channels, BL)
 # note that avgAVREC is full csd average rectified, while AvgRectCSD is the average
 # of the csd rectified over channels (trialwise mean(abs(csd)) vs abs(csd))
 
 ### Calculate sink features in layers
 
-sink_dura()
+# output sorted by stimuli, layer, and then sink feature
+snkData = sink_dura(LII,LVI,LV,LVI,csdData["AvgCSD"],csdData["SnglTrlCSD"],BL)
 
 
 
