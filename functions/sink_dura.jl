@@ -82,7 +82,7 @@ function sink_dura(LII, LIV, LV, LVI, AvgCSD, SnglTrlCSD, BL=200)
             end
 
             Data["Sngl_RMS"],Data["Sngl_PAMP"],Data["Sngl_PLAT"] =
-                make_snglsinklist(rawCSD_single,SinkON,SinkOFF)  # in functions.jl
+                make_snglsinklist(rawCSD_single,Data["SinkON"],Data["SinkOFF"])  # in functions.jl
 
             Layer[LayName[ilay]] = Data
         end

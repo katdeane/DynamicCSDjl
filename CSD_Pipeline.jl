@@ -12,7 +12,7 @@ raw = joinpath(home,"raw")
 func = joinpath(home,"functions")
 figs = joinpath(home,"figs")
 
-include(joinpath(func,"DynamicCSDjl.jl"))
+include(joinpath(func,"Dynamic_CSD.jl"))
 include(joinpath(func,"SingleTrialCSD.jl"))
 include(joinpath(func,"get_csd.jl")) # used in SingleTrialCSD.jl
 include(joinpath(func,"sink_dura.jl"))
