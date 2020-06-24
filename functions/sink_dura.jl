@@ -14,6 +14,8 @@ function sink_dura(LII, LIV, LV, LVI, AvgCSD, SnglTrlCSD, BL=200)
         Layer = Dict() # initialize here to not overwrite
         for ilay = 1:length(LayDat)
 
+### Average Trial
+
             # find the standard deviation and mean of the current stim baseline
             csdBL = AvgCSD[istim][:,1:BL]
             stdBL, meanBL = std(csdBL), mean(csdBL)
@@ -38,34 +40,19 @@ function sink_dura(LII, LIV, LV, LVI, AvgCSD, SnglTrlCSD, BL=200)
             thresh_std  = (meanBL + (stdBL*std_lev))
 
             # check the plots for sanity:
-            plot(zeroCSD')
-            plot(smoothCSD)
-            plot!(ones(length(rawCSD)) .* thresh_mean)
-            plot!(ones(length(rawCSD)) .* thresh_std)
+            # plot(zeroCSD')
+            # plot(smoothCSD)
+            # plot!(ones(length(rawCSD)) .* thresh_mean)
+            # plot!(ones(length(rawCSD)) .* thresh_std)
 
             ### Find the sinks
 
             # list of intercepts with first threshold
             P = interX(smoothCSD,thresh_mean) # in functions.jl
-
             # generate features, root mean square, peak amp, peak latency from raw data
-            rmslist  = Array{Union{Missing, Float64}}(missing,length(P))
-            pamplist = Array{Union{Missing, Float64}}(missing,length(P))
-            platlist = Array{Union{Missing, Float64}}(missing,length(P))
-
-            if length(P) > 1
-                for iX = 1:length(P)-1
-                    # if the peak between points exceeds the second threshold then it's a sink
-                    if maximum(smoothCSD[P[iX]:P[iX+1]]) >= thresh_std
-                        rmslist[iX] = rms(rawCSD[P[iX]:P[iX+1]])
-                        pamplist[iX] = maximum(rawCSD[P[iX]:P[iX+1]])
-                        platlist[iX] = findfirst(rawCSD[P[iX]:P[iX+1]] .== pamplist[iX]) + P[iX]-1
-                    end
-                end
-            end
+            rmslist,pamplist,platlist = make_sinklist(P,smoothCSD,rawCSD,thresh_std) # in functions.jl
 
             ### Collect the Data
-
             Data = Dict()
             if sum(skipmissing(rmslist)) == 0 #no detected sinks
                 Data["SinkON"]   = missing
@@ -84,9 +71,21 @@ function sink_dura(LII, LIV, LV, LVI, AvgCSD, SnglTrlCSD, BL=200)
                 Data["SinkPLAT"] = platlist[sinklist] .- BL
             end
 
+### Single Trial
+
+            # skip the rest if there's no detected sinks
+            if ismissing(Data["SinkRMS"])
+                Data["Sngl_PAMP"] = missing
+                Data["Sngl_PLAT"] = missing
+                Data["Sngl_RMS"]  = missing
+                continue
+            end
+
+            Data["Sngl_RMS"],Data["Sngl_PAMP"],Data["Sngl_PLAT"] =
+                make_snglsinklist(rawCSD_single,SinkON,SinkOFF)  # in functions.jl
+
             Layer[LayName[ilay]] = Data
         end
-
         Stim[StimName[istim]] = Layer
     end
 
