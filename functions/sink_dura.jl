@@ -49,6 +49,7 @@ function sink_dura(LII, LIV, LV, LVI, AvgCSD, SnglTrlCSD, BL=200)
 
             # list of intercepts with first threshold
             P = interX(smoothCSD,thresh_mean) # in functions.jl
+
             # generate features, root mean square, peak amp, peak latency from raw data
             rmslist,pamplist,platlist = make_sinklist(P,smoothCSD,rawCSD,thresh_std) # in functions.jl
 

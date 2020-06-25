@@ -1,29 +1,26 @@
-function interX(vdata,pdata)
+function interX(data, threshold)
+    # Written by Asim Hassan Dar 24.06.2020
 
-    # vdata should be the vector of data
-    # pdata should be the real value to which the threshold is set
+    over = data .> threshold
 
-    # create bool list for where vdata lies above (1) or below (0) the threshold
-    allabove = findall(vdata.>pdata)
-    if length(allabove) < 2
-        P = missing
-    else
-        P = Array{Union{Missing, Int64}}(missing,length(allabove))
-        P[1] = findfirst(vdata.>pdata)
-
-        for iX = 1:length(allabove)-1
-
-            if (allabove[iX+1] - allabove[iX]) .!= 1
-                P[iX+1] = allabove[iX]
-            end
-
+    onsets=[]
+    offsets=[]
+    # Starting at two to compare to first point. Ending at second last data point. (workable?)
+    for data_idx in 2:length(data)-1
+        if data[data_idx] > threshold && data[data_idx-1] < threshold
+            push!(onsets,data_idx)
         end
 
-        P = collect(skipmissing(P))
-        push!(P,findlast(vdata.>pdata))
-        # P is now a list of the closest ms before each line cross
+        if data[data_idx] < threshold && data[data_idx-1] > threshold
+            offset = data_idx
+            push!(offsets,data_idx)
+        end
+
     end
+
+    P = sort([onsets; offsets])
     return P
+
 end
 
 function make_sinklist(P,smoothCSD,rawCSD,thresh_std)

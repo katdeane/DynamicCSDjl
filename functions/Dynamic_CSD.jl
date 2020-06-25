@@ -108,6 +108,7 @@ function Dynamic_CSD(measurement,channels,LII,LIV,LV,LVI,raw,figs,Group)
     if !isdir(joinpath(figs,Group))
         mkdir(joinpath(figs,Group))
     end
+
     name = joinpath(figs,Group,measurement[1:end-4]) * "_CSD.pdf"
     savefig(csd_plot, name)
 
