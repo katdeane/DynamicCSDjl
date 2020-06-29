@@ -9,24 +9,29 @@ function Dynamic_CSD(measurement,channels,LII,LIV,LV,LVI,raw,figs,Group)
     # frequency stim list contains all frequencies presented during this measurement
     frqz = Dat["Header"]["stimlist"][:,1]
 
-    ### Calculate CSD, LFP, Avrec, Relres, Absrec:
-
+    # Calculate CSD, LFP, Avrec, Relres, Absrec:
     csdData = SingleTrialCSD(Dat["SWEEP"], channels, BL)
     # note that avgAVREC is full csd average rectified, while AvgRectCSD is the average
     # of the csd rectified over channels (trialwise mean(abs(csd)) vs abs(csd))
 
-    ### Calculate sink features in layers
-
+    # Calculate sink features in layers
     # output sorted by stimuli, layer, and then sink feature
-    snkData = sink_dura(LII,LVI,LV,LVI,csdData["AvgCSD"],csdData["SnglTrlCSD"],BL)
+    snkData = sink_dura(LII,LIV,LV,LVI,csdData["AvgCSD"],csdData["SnglTrlCSD"],BL)
 
-    ## CSD PLOT
+    ## CSD PLOT, fucntion below
+    plotCSD(csdData["AvgCSD"],snkData,frqz,BL)
 
-    csd_plot = plot(layout = (2,Int64(ceil(length(csdData["AvgCSD"])/2))))
-    for icsd = 1:length(csdData["AvgCSD"])
+    return csdData, snkData
+end
+
+
+function plotCSD(AvgCSD,snkData,frqz,BL)
+
+    csd_plot = plot(layout = (2,Int64(ceil(length(AvgCSD)/2))))
+    for icsd = 1:length(AvgCSD)
         heatmap!(
             csd_plot,#csd_plot,
-            csdData["AvgCSD"][icsd],
+            AvgCSD[icsd],
             size    = (1480,1000),
             c       = :jet, # requires Colors.jl
             clims   = (-0.0005,0.0005),
@@ -36,71 +41,71 @@ function Dynamic_CSD(measurement,channels,LII,LIV,LV,LVI,raw,figs,Group)
 
         curCSD = snkData[string(icsd)]
 
-        if haskey(curCSD,"LII")
+        if haskey(curCSD,"LII") && !ismissing(curCSD["LII"]["SinkRMS"])
             for isink = 1:length(curCSD["LII"]["SinkON"])
                 start = curCSD["LII"]["SinkON"][isink] .+ BL
                 stop = curCSD["LII"]["SinkOFF"][isink] .+ BL
                 startline, stopline = repeat([start],length(LII)), repeat([stop],length(LII))
                 topline, botline =  repeat([LII[1]],stop-start+1), repeat([LII[end]],stop-start+1)
                 plot!(csd_plot, startline, LII,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, stopline, LII,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], botline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], topline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
             end
         end
 
-        if haskey(curCSD,"LIV")
+        if haskey(curCSD,"LIV") && !ismissing(curCSD["LIV"]["SinkRMS"])
             for isink = 1:length(curCSD["LIV"]["SinkON"])
                 start = curCSD["LIV"]["SinkON"][isink] .+ BL
                 stop = curCSD["LIV"]["SinkOFF"][isink] .+ BL
                 startline, stopline = repeat([start],length(LIV)), repeat([stop],length(LIV))
                 topline, botline =  repeat([LIV[1]],stop-start+1), repeat([LIV[end]],stop-start+1)
                 plot!(csd_plot, startline, LIV,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, stopline, LIV,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], botline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], topline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
             end
         end
 
-        if haskey(curCSD,"LV")
+        if haskey(curCSD,"LV") && !ismissing(curCSD["LV"]["SinkRMS"])
             for isink = 1:length(curCSD["LV"]["SinkON"])
                 start = curCSD["LV"]["SinkON"][isink] .+ BL
                 stop = curCSD["LV"]["SinkOFF"][isink] .+ BL
                 startline, stopline = repeat([start],length(LV)), repeat([stop],length(LV))
                 topline, botline =  repeat([LV[1]],stop-start+1), repeat([LV[end]],stop-start+1)
                 plot!(csd_plot, startline, LV,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, stopline, LV,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], botline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], topline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
             end
         end
 
-        if haskey(curCSD,"LVI")
+        if haskey(curCSD,"LVI") && !ismissing(curCSD["LVI"]["SinkRMS"])
             for isink = 1:length(curCSD["LVI"]["SinkON"])
                 start = curCSD["LVI"]["SinkON"][isink] .+ BL
                 stop = curCSD["LVI"]["SinkOFF"][isink] .+ BL
                 startline, stopline = repeat([start],length(LVI)), repeat([stop],length(LVI))
                 topline, botline =  repeat([LVI[1]],stop-start+1), repeat([LVI[end]],stop-start+1)
                 plot!(csd_plot, startline, LVI,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, stopline, LVI,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], botline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
                 plot!(csd_plot, [start:stop...], topline,
-                    subplot = icsd, legend=false, linewidth = 4, c = :black)
+                    subplot = icsd, legend=false, linewidth = 3, c = :black)
             end
         end
     end
@@ -112,5 +117,4 @@ function Dynamic_CSD(measurement,channels,LII,LIV,LV,LVI,raw,figs,Group)
     name = joinpath(figs,Group,measurement[1:end-4]) * "_CSD.pdf"
     savefig(csd_plot, name)
 
-    return csdData, snkData
 end
