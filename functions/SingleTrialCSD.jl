@@ -13,17 +13,17 @@ function SingleTrialCSD(SWEEP, channels, BL=200)
     stim_list = Int64.(SWEEP["Header"])
 
     # pre-allocate
-    LFP    = ones(size(stim_list,1),size(channels,2),size(SWEEP["AD"][1],1))
-    CSD    = ones(size(stim_list,1),size(channels,2),size(SWEEP["AD"][1],1))
+    LFP    = ones(size(stim_list,1),length(channels),size(SWEEP["AD"][1],1))
+    CSD    = ones(size(stim_list,1),length(channels),size(SWEEP["AD"][1],1))
     AVREC  = ones(size(stim_list,1),size(SWEEP["AD"][1],1))
     RELRES = ones(size(stim_list,1),size(SWEEP["AD"][1],1))
     ABSRES = ones(size(stim_list,1),size(SWEEP["AD"][1],1))
-    LayerAVREC  = ones(size(stim_list,1),size(channels,2),size(SWEEP["AD"][1],1))
+    LayerAVREC  = ones(size(stim_list,1),length(channels),size(SWEEP["AD"][1],1))
 
     for i_trial = 1:size(stim_list,1)
 
         # Channel AD, or direct LFP recording
-        lfp = dropdims( (SWEEP["AD"][i_trial][:,channels']), dims=3)'
+        lfp = SWEEP["AD"][i_trial][:,channels]'
         # convert LFP to CSD
         csd = get_csd(lfp, chan_dist, BL, hamm_width)
 
