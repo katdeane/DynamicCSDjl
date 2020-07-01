@@ -19,13 +19,13 @@ function Dynamic_CSD(measurement,channels,LII,LIV,LV,LVI,raw,figs,Group)
     snkData = sink_dura(LII,LIV,LV,LVI,csdData["AvgCSD"],csdData["SnglTrlCSD"],BL)
 
     ## CSD PLOT, fucntion below
-    plotCSD(csdData["AvgCSD"],snkData,frqz,BL)
+    plotCSD(csdData["AvgCSD"],snkData,frqz,BL,measurement,figs,Group)
 
     return csdData, snkData
 end
 
 
-function plotCSD(AvgCSD,snkData,frqz,BL)
+function plotCSD(AvgCSD,snkData,frqz,BL,measurement,figs,Group)
 
     csd_plot = plot(layout = (2,Int64(ceil(length(AvgCSD)/2))))
     for icsd = 1:length(AvgCSD)
@@ -41,7 +41,7 @@ function plotCSD(AvgCSD,snkData,frqz,BL)
 
         curCSD = snkData[string(icsd)]
 
-        if haskey(curCSD,"LII") && !ismissing(curCSD["LII"]["SinkRMS"])
+        if !ismissing(curCSD["LII"]["SinkRMS"])
             for isink = 1:length(curCSD["LII"]["SinkON"])
                 start = curCSD["LII"]["SinkON"][isink] .+ BL
                 stop = curCSD["LII"]["SinkOFF"][isink] .+ BL
@@ -58,7 +58,7 @@ function plotCSD(AvgCSD,snkData,frqz,BL)
             end
         end
 
-        if haskey(curCSD,"LIV") && !ismissing(curCSD["LIV"]["SinkRMS"])
+        if !ismissing(curCSD["LIV"]["SinkRMS"])
             for isink = 1:length(curCSD["LIV"]["SinkON"])
                 start = curCSD["LIV"]["SinkON"][isink] .+ BL
                 stop = curCSD["LIV"]["SinkOFF"][isink] .+ BL
@@ -75,7 +75,7 @@ function plotCSD(AvgCSD,snkData,frqz,BL)
             end
         end
 
-        if haskey(curCSD,"LV") && !ismissing(curCSD["LV"]["SinkRMS"])
+        if !ismissing(curCSD["LV"]["SinkRMS"])
             for isink = 1:length(curCSD["LV"]["SinkON"])
                 start = curCSD["LV"]["SinkON"][isink] .+ BL
                 stop = curCSD["LV"]["SinkOFF"][isink] .+ BL
@@ -92,7 +92,7 @@ function plotCSD(AvgCSD,snkData,frqz,BL)
             end
         end
 
-        if haskey(curCSD,"LVI") && !ismissing(curCSD["LVI"]["SinkRMS"])
+        if !ismissing(curCSD["LVI"]["SinkRMS"])
             for isink = 1:length(curCSD["LVI"]["SinkON"])
                 start = curCSD["LVI"]["SinkON"][isink] .+ BL
                 stop = curCSD["LVI"]["SinkOFF"][isink] .+ BL
