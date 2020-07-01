@@ -24,12 +24,32 @@ include(joinpath(group,"callGroup.jl"))
 # groups, animal, condition, measurement
 Group = "KIT"
 #'Pre' 'preAM' 'preAMtono' 'preCL' 'preCLtono' 'spPre1' 'spPost1' 'CL' 'CLtono' 'spPre2' 'spPost2' 'AM' 'AMtono' 'spEnd'
-CondName = ["Pre"]
-animals,channels,LII,LIV,LV,LVI,Cond = callGroup(Group)
+
+CondName = ["Pre" "CL"]
+# generate lists of channels, layers, and measurements for each animal in this group
+animals,channels,LII,LIV,LV,LVI,Cond = callGroup(Group) # in groups folder
+
+# loop through each animal (dictionary per animal)
 for iAn = 1:length(animals)
+    # loop through each type of measurement condition (specified by CondName)
     for iCond = 1:length(CondName)
-        for 
-        csdData,snkData = Dynamic_CSD(measurement,channels[iAn],LII[iAn],LIV[iAn],
-            LV[iAn],LVI[iAn],raw,figs,Group)
+        # loop through each measurement within that condition for that animal
+        for iMeas = 1:length(Cond[CondName[iCond]][iAn])
+
+            #to test!
+            iAn, iCond, iMeas = 1, 1, 1
+            # channels = channels[iAn]
+            # LII = LII[iAn]
+            # LIV = LIV[iAn]
+            # LV = LV[iAn]
+            # LVI = LVI[iAn]
+            # #
+            measurement = animals[iAn] * "_" * Cond[CondName[iCond]][iAn][iMeas] * ".mat"
+            println("Analyzing measurement: " * measurement[1:end-4])
+
+            @elapsed csdData,snkData = Dynamic_CSD(measurement,channels[iAn],LII[iAn],LIV[iAn],
+                LV[iAn],LVI[iAn],raw,figs,Group)
+
+        end
     end
 end
