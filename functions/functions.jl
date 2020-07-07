@@ -85,7 +85,7 @@ function sinkdet_var(AvgCSD, SnglTrlCSD, LayDat, BL, std_detect, std_lev)
 
     # create gaussian filter for smoothing and apply it
     gauswin = gaussian(11,0.15) #fairly conservative alpha
-    smoothCSD = (conv(zeroCSD[:],gauswin) ./sum(gauswin))[6:805] #cut off filter padding
+    smoothCSD = (conv(zeroCSD[:],gauswin) ./sum(gauswin))[6:end-5] #cut off filter padding
     # cap the beginning and end of the data
     smoothCSD[1:BL] .= meanBL - stdBL
     smoothCSD[end]   = meanBL - stdBL

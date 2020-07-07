@@ -8,7 +8,6 @@ function sink_dura(LII, LIV, LV, LVI, AvgCSD, SnglTrlCSD, BL=200)
     StimName = string.(1:size(AvgCSD,1))
 
     Stim = Dict()
-
     for istim = 1:size(AvgCSD,1)
 
         Layer = Dict() # initialize here to not overwrite
