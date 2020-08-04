@@ -19,13 +19,13 @@ function Dynamic_CSD(measurement,channels,LII,LIV,LV,LVI,raw,figs,Group)
     snkData = sink_dura(LII,LIV,LV,LVI,csdData["AvgCSD"],csdData["SnglTrlCSD"],BL)
 
     ## CSD PLOT, fucntion below
-    plotCSD(csdData["AvgCSD"],snkData,frqz,BL,measurement,figs,Group)
+    plotCSD(csdData["AvgCSD"],snkData,frqz,BL,measurement,figs,Group, LII, LIV, LV, LVI)
 
     return csdData, snkData
 end
 
 
-function plotCSD(AvgCSD,snkData,frqz,BL,measurement,figs,Group)
+function plotCSD(AvgCSD,snkData,frqz,BL,measurement,figs,Group, LII, LIV, LV, LVI)
 
     csd_plot = plot(layout = (2,Int64(ceil(length(AvgCSD)/2))))
     for icsd = 1:length(AvgCSD)
