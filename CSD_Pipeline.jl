@@ -23,14 +23,14 @@ include(joinpath(func,"functions.jl"))
 include(joinpath(group,"callGroup.jl"))
 
 # determine data to read -- this will be a more complicated process later!
-Group = ["KIC" "KIT" "KIV"]
+GroupList = ["KIC" "KIT"]
 #"Pre" "preAM" "preAMtono" "preCL" "preCLtono" "spPre1" "spPost1" "CL" "CLtono" "spPre2" "spPost2" "AM" "AMtono" "spEnd"
 CondName = ["Pre" "CL"]
 
 # loop through groups
-for iGr = 1:length(Group)
+for iGr = 1:length(GroupList)
     # generate lists of channels, layers, and measurements for each animal in this group
-    animalList,chanList,LIIList,LIVList,LVList,LVIList,CondList = callGroup(Group[iGr]) # in groups folder
+    animalList,chanList,LIIList,LIVList,LVList,LVIList,CondList = callGroup(GroupList[iGr]) # in groups folder
 
     # loop through each animal (dictionary per animal)
     Animal = Dict()
@@ -55,7 +55,7 @@ for iGr = 1:length(Group)
                 println("Analyzing measurement: " * measurement[1:end-4])
 
                 csdData,snkData = Dynamic_CSD(measurement,channels,LII,LIV,
-                    LV,LVI,raw,figs,Group);
+                    LV,LVI,raw,figs,GroupList[iGr]);
 
                 Measurement[CondList[CondName[iCond]][iAn][iMeas]] = csdData,snkData;
             end
